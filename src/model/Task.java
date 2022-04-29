@@ -6,18 +6,18 @@ public class Task {
     private String title;
     private String description;
     private int id;
-    private String status;
+    private TaskStatus status;
 
-    public Task(String title, String description, String status) {
+    public Task(String title, String description, TaskStatus taskStatus) {
         this.title = title;
         this.description = description;
-        this.status = status;
+        this.status = taskStatus;
     }
 
     public Task(String title, String description) {
         this.title = title;
         this.description = description;
-        this.status = String.valueOf(TaskStatus.NEW);
+        this.status = TaskStatus.NEW;
     }
 
     public void setTitle(String title) {
@@ -32,7 +32,7 @@ public class Task {
         this.id = id;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
@@ -48,7 +48,7 @@ public class Task {
         return id;
     }
 
-    public String getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
@@ -57,7 +57,8 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id && Objects.equals(title, task.title) && Objects.equals(description, task.description) && Objects.equals(status, task.status);
+        return id == task.id && Objects.equals(title, task.title) && Objects.equals(description, task.description)
+                && Objects.equals(status, task.status);
     }
 
     @Override

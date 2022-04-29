@@ -29,22 +29,22 @@ public class Test {
 
         printDescription();
 
-        task1.setStatus(String.valueOf(TaskStatus.IN_PROGRESS));
+        task1.setStatus(TaskStatus.IN_PROGRESS);
         manager.updateTask(task1);
 
         printStatus(task1);
 
-        task2.setStatus(String.valueOf(TaskStatus.DONE));
+        task2.setStatus(TaskStatus.DONE);
         manager.updateTask(task2);
 
         printStatus(task2);
 
-        subtask1.setStatus(String.valueOf(TaskStatus.IN_PROGRESS));
+        subtask1.setStatus(TaskStatus.IN_PROGRESS);
         manager.updateSubTask(subtask1);
 
         printStatus(epic1);
 
-        subtask3.setStatus(String.valueOf(TaskStatus.DONE));
+        subtask3.setStatus(TaskStatus.DONE);
         manager.updateSubTask(subtask3);
 
         printStatus(epic2);
@@ -81,8 +81,8 @@ public class Test {
 
     private void printLists() {
         System.out.println();
-        System.out.println(manager.getTaskHashMap());
-        System.out.println(manager.getEpicHashMap());
-        System.out.println(manager.getSubTaskHashMap());
+        System.out.println(manager.getTasksMap());
+        System.out.println(manager.getEpicsMap());
+        System.out.println(manager.getSubTasksMap());
     }
 }

@@ -5,13 +5,13 @@ import java.util.Objects;
 public class SubTask extends Task {
     private int epicId;
 
-    public SubTask(String title, String description, String status) {
-        super(title, description, status);
+    public SubTask(String title, String description, TaskStatus taskStatus, int epicId) {
+        super(title, description, taskStatus);
         this.epicId = epicId;
     }
 
     public SubTask(String title, String description, int epicId) {
-        super(title, description, String.valueOf(TaskStatus.NEW));
+        super(title, description, TaskStatus.NEW);
         this.epicId = epicId;
     }
 
