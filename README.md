@@ -1,4 +1,3 @@
-# _java-kanban_  
-___
+# _java-kanban_
 #### _Repository for homework project._  
 
