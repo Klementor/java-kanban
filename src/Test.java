@@ -12,9 +12,11 @@ public class Test {
 
         Epic epic1 = new Epic("Поиграть с сестрой", "Поиграть во дворе");
         manager.addEpic(epic1);
-        SubTask subtask1 = new SubTask("Позвать сестру домой", "Найти сестру среди других детей", epic1.getId());
+        SubTask subtask1 = new SubTask("Позвать сестру домой",
+                "Найти сестру среди других детей", epic1.getId());
         manager.addSubTask(subtask1);
-        SubTask subtask2 = new SubTask("Пригрозить, что расскажу родителям", "Желания сестры и мои не сошлись", epic1.getId());
+        SubTask subtask2 = new SubTask("Пригрозить, что расскажу родителям",
+                "Желания сестры и мои не сошлись", epic1.getId());
         manager.addSubTask(subtask2);
 
         Epic epic2 = new Epic("Посмотреть фильм с девушкой", "");
@@ -27,28 +29,27 @@ public class Test {
 
         printDescription();
 
-        task1.setStatus(TaskStatus.IN_PROGRESS);
+        task1.setStatus(String.valueOf(TaskStatus.IN_PROGRESS));
         manager.updateTask(task1);
 
         printStatus(task1);
 
-        task2.setStatus(TaskStatus.DONE);
+        task2.setStatus(String.valueOf(TaskStatus.DONE));
         manager.updateTask(task2);
 
         printStatus(task2);
 
-        subtask1.setStatus(TaskStatus.IN_PROGRESS);
+        subtask1.setStatus(String.valueOf(TaskStatus.IN_PROGRESS));
         manager.updateSubTask(subtask1);
 
         printStatus(epic1);
 
-        subtask3.setStatus(TaskStatus.DONE);
+        subtask3.setStatus(String.valueOf(TaskStatus.DONE));
         manager.updateSubTask(subtask3);
 
         printStatus(epic2);
 
-        manager.removeTask(task1.getId());
-        manager.removeEpic(epic1.getId());
+        manager.clearSubTask();
 
         printLists();
     }

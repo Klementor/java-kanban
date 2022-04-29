@@ -17,7 +17,7 @@ public class Task {
     public Task(String title, String description) {
         this.title = title;
         this.description = description;
-        this.status = TaskStatus.NEW;
+        this.status = String.valueOf(TaskStatus.NEW);
     }
 
     public void setTitle(String title) {
