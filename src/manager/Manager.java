@@ -12,7 +12,7 @@ public class Manager {
     private final HashMap<Integer, Epic> epicsMap;
     private final HashMap<Integer, SubTask> subTasksMap;
 
-    public Manager(){
+    public Manager() {
         this.tasksMap = new HashMap<>();
         this.epicsMap = new HashMap<>();
         this.subTasksMap = new HashMap<>();
@@ -48,7 +48,11 @@ public class Manager {
     }
 
     public ArrayList<Integer> getSubTaskList(int epicId) {    //Нахождение по id Epic'а всех id subTask'ов
-        return getEpic(epicId).getIdSubTasks();
+        if (getEpic(epicId) != null) {
+            return getEpic(epicId).getIdSubTasks();
+        } else {
+            return null;
+        }
     }
 
     public HashMap<Integer, Task> getTasksMap() {    //Получение HashMap'ов всех типов задач
@@ -101,38 +105,46 @@ public class Manager {
     }
 
     public void removeTask(int id) {    //Удаление одной конкретной задачи, эпика или подзадачи
-        tasksMap.remove(id);
+        if (getTask(id) != null) {
+            tasksMap.remove(id);
+        }
     }
 
     public void removeEpic(int id) {    //При удалении Epic'а, нужно удалить и все принадлежащие ему подзадачи
-        for (int i = 0; i < getSubTaskList(id).size(); i++) {
-            subTasksMap.remove(getSubTaskList(id).get(i));
+        if (getSubTaskList(id) != null) {
+            for (int i = 0; i < getSubTaskList(id).size(); i++) {
+                subTasksMap.remove(getSubTaskList(id).get(i));
+            }
+            epicsMap.remove(id);
         }
-        epicsMap.remove(id);
     }
 
     public void removeSubTask(int id) {     //При удалении подзадачи, нужно сделать проверку статуса Epic'а
-        getSubTaskList(getSubTask(id).getEpicId()).remove((Integer) id);
-        updateStatusEpic(getSubTask(id).getEpicId());
-        subTasksMap.remove(id);
+        if (getSubTask(id) != null) {
+            getSubTaskList(getSubTask(id).getEpicId()).remove((Integer) id);
+            updateStatusEpic(getSubTask(id).getEpicId());
+            subTasksMap.remove(id);
+        }
     }
 
     public void updateStatusEpic(int id) {    //Обновление статуса Epic'а
         int statusInProgress = 0;
         int statusDone = 0;
-        for (int i = 0; i < getSubTaskList(id).size(); i++) {
-            if (getSubTask(getSubTaskList(id).get(i)).equals(TaskStatus.IN_PROGRESS)) {
-                statusInProgress++;
-            } else {
-                statusDone++;
+        if (getSubTaskList(id) != null) {
+            for (int i = 0; i < getSubTaskList(id).size(); i++) {
+                if (getSubTask(getSubTaskList(id).get(i)).equals(TaskStatus.IN_PROGRESS)) {
+                    statusInProgress++;
+                } else {
+                    statusDone++;
+                }
             }
-        }
-        if (statusInProgress < 1 && statusDone < 1) {
-            getEpic(id).setStatus(TaskStatus.NEW);
-        } else if (statusInProgress > 1) {
-            getEpic(id).setStatus(TaskStatus.IN_PROGRESS);
-        } else {
-            getEpic(id).setStatus(TaskStatus.DONE);
+            if (statusInProgress < 1 && statusDone < 1) {
+                getEpic(id).setStatus(TaskStatus.NEW);
+            } else if (statusInProgress > 1) {
+                getEpic(id).setStatus(TaskStatus.IN_PROGRESS);
+            } else {
+                getEpic(id).setStatus(TaskStatus.DONE);
+            }
         }
     }
 }
