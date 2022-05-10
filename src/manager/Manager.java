@@ -104,7 +104,7 @@ public class Manager {
         }
     }
 
-    public void removeTask(int id) {    //Удаление одной конкретной задачи, эпика или подзадачи
+    public void removeTask(int id) {    //Удаление одной конкретной задачи
         if (getTask(id) != null) {
             tasksMap.remove(id);
         }
@@ -120,7 +120,7 @@ public class Manager {
     }
 
     public void removeSubTask(int id) {     //При удалении подзадачи, нужно сделать проверку статуса Epic'а
-        if (getSubTask(id) != null) {
+        if (getSubTaskList(getSubTask(id).getEpicId()) != null) {
             getSubTaskList(getSubTask(id).getEpicId()).remove((Integer) id);
             updateStatusEpic(getSubTask(id).getEpicId());
             subTasksMap.remove(id);
