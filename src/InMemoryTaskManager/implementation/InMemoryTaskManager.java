@@ -1,33 +1,42 @@
-package manager;
+package InMemoryTaskManager.implementation;
 
+import InMemoryTaskManager.interfaces.*;
+import InMemoryTaskManager.Managers;
 import model.*;
 import model.Task;
+import static model.TaskStatus.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
-public class Manager {
+public class InMemoryTaskManager implements TaskManager {
     private int id = 0;
     private final HashMap<Integer, Task> tasksMap;
     private final HashMap<Integer, Epic> epicsMap;
     private final HashMap<Integer, SubTask> subTasksMap;
+    private final HistoryManager history;
 
-    public Manager() {
+    public InMemoryTaskManager() {
         this.tasksMap = new HashMap<>();
         this.epicsMap = new HashMap<>();
         this.subTasksMap = new HashMap<>();
+        this.history = Managers.getDefaultHistory();
     }
 
+    @Override
     public void addTask(Task task) {    //Добавление в мапы всех видов задач
         task.setId(id++);
         tasksMap.put(task.getId(), task);
     }
 
+    @Override
     public void addEpic(Epic epic) {
         epic.setId(id++);
         epicsMap.put(epic.getId(), epic);
     }
 
+    @Override
     public void addSubTask(SubTask subTask) {
         subTask.setId(id++);
         subTasksMap.put(subTask.getId(), subTask);
@@ -35,68 +44,96 @@ public class Manager {
         updateStatusEpic(subTask.getEpicId());
     }
 
+    @Override
     public Task getTask(int id) {    //Получение задач всех видов
-        return tasksMap.getOrDefault(id, null);
-    }
-
-    public Epic getEpic(int id) {
-        return epicsMap.getOrDefault(id, null);
-    }
-
-    public SubTask getSubTask(int id) {
-        return subTasksMap.getOrDefault(id, null);
-    }
-
-    public ArrayList<Integer> getSubTaskList(int epicId) {    //Нахождение по id Epic'а всех id subTask'ов
-        if (getEpic(epicId) != null) {
-            return getEpic(epicId).getIdSubTasks();
+        if (tasksMap.getOrDefault(id, null) != null) {
+            history.addHistory(tasksMap.get(id));
+            return tasksMap.get(id);
         } else {
             return null;
         }
     }
 
+    @Override
+    public Epic getEpic(int id) {
+        if (epicsMap.getOrDefault(id, null) != null) {
+            history.addHistory(epicsMap.get(id));
+            return epicsMap.get(id);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public SubTask getSubTask(int id) {
+        if (subTasksMap.getOrDefault(id, null) != null) {
+            history.addHistory(subTasksMap.get(id));
+            return subTasksMap.get(id);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public ArrayList<Integer> getSubTaskList(int epicId) {    //Нахождение по id Epic'а всех id subTask'ов
+        if (epicsMap.getOrDefault(epicId, null) != null) {
+            return epicsMap.getOrDefault(epicId, null).getIdSubTasks();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public HashMap<Integer, Task> getTasksMap() {    //Получение HashMap'ов всех типов задач
         return tasksMap;
     }
 
+    @Override
     public HashMap<Integer, Epic> getEpicsMap() {
         return epicsMap;
     }
 
+    @Override
     public HashMap<Integer, SubTask> getSubTasksMap() {
         return subTasksMap;
     }
 
+    @Override
     public void clearTask() {    //Полная очистка HashMap'ов
         tasksMap.clear();
     }
 
+    @Override
     public void clearEpic() {    //При очистке Epic'а, нужно очистить и его subTask'и
         epicsMap.clear();
         subTasksMap.clear();
     }
 
+    @Override
     public void clearSubTask() {    //При очистке subTask'ов нужно изменить статус Epic'а,
         // а также очистить списки idSubTask в Epic'ах
         subTasksMap.clear();
         for (Integer id : epicsMap.keySet()) {
-            getEpic(id).setStatus(TaskStatus.NEW);
-            getEpic(id).setIdSubTasks(null);
+            epicsMap.get(id).setStatus(NEW);
+            epicsMap.get(id).setIdSubTasks(null);
         }
     }
 
+    @Override
     public void updateTask(Task task) {    //Обновление всех типов задач
         if (tasksMap.containsKey(task.getId())) {
             tasksMap.put(task.getId(), task);
         }
     }
 
+    @Override
     public void updateEpic(Epic epic) {
         if (epicsMap.containsKey(epic.getId())) {
             epicsMap.put(epic.getId(), epic);
         }
     }
 
+    @Override
     public void updateSubTask(SubTask subTask) {
         if (subTasksMap.containsKey(subTask.getId())) {
             subTasksMap.put(subTask.getId(), subTask);
@@ -104,12 +141,14 @@ public class Manager {
         }
     }
 
+    @Override
     public void removeTask(int id) {    //Удаление одной конкретной задачи
-        if (getTask(id) != null) {
+        if (tasksMap.getOrDefault(id, null) != null) {
             tasksMap.remove(id);
         }
     }
 
+    @Override
     public void removeEpic(int id) {    //При удалении Epic'а, нужно удалить и все принадлежащие ему подзадачи
         if (getSubTaskList(id) != null) {
             for (int i = 0; i < getSubTaskList(id).size(); i++) {
@@ -119,32 +158,42 @@ public class Manager {
         }
     }
 
+    @Override
     public void removeSubTask(int id) {     //При удалении подзадачи, нужно сделать проверку статуса Epic'а
-        if (getSubTaskList(getSubTask(id).getEpicId()) != null) {
-            getSubTaskList(getSubTask(id).getEpicId()).remove((Integer) id);
-            updateStatusEpic(getSubTask(id).getEpicId());
+        if (getSubTaskList(subTasksMap.getOrDefault(id, null).getEpicId()) != null) {
+            getSubTaskList(subTasksMap.getOrDefault(id, null).getEpicId()).remove((Integer) id);
+            updateStatusEpic(subTasksMap.getOrDefault(id, null).getEpicId());
             subTasksMap.remove(id);
         }
     }
 
+    @Override
     public void updateStatusEpic(int id) {    //Обновление статуса Epic'а
         int statusInProgress = 0;
         int statusDone = 0;
         if (getSubTaskList(id) != null) {
             for (int i = 0; i < getSubTaskList(id).size(); i++) {
-                if (getSubTask(getSubTaskList(id).get(i)).equals(TaskStatus.IN_PROGRESS)) {
-                    statusInProgress++;
-                } else {
-                    statusDone++;
+                if (subTasksMap.getOrDefault(getSubTaskList(id).get(i), null) != null) {
+                    if (subTasksMap.getOrDefault((getSubTaskList(id).get(i)), null).getStatus() == IN_PROGRESS) {
+                        statusInProgress++;
+
+                    } else {
+                        statusDone++;
+                    }
                 }
             }
             if (statusInProgress < 1 && statusDone < 1) {
-                getEpic(id).setStatus(TaskStatus.NEW);
+                epicsMap.get(id).setStatus(NEW);
             } else if (statusInProgress > 1) {
-                getEpic(id).setStatus(TaskStatus.IN_PROGRESS);
+                epicsMap.get(id).setStatus(IN_PROGRESS);
             } else {
-                getEpic(id).setStatus(TaskStatus.DONE);
+                epicsMap.get(id).setStatus(DONE);
             }
         }
+    }
+
+    @Override
+    public LinkedList<Task> getHistory() {
+        return history.getHistory();
     }
 }
