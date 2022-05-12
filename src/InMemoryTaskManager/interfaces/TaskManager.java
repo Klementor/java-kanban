@@ -5,7 +5,7 @@ import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 
 public interface TaskManager {
 
@@ -49,5 +49,5 @@ public interface TaskManager {
 
     void updateStatusEpic(int id);
 
-    LinkedList<Task> getHistory();
+    List<Task> getHistory();
 }

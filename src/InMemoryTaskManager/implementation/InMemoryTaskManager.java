@@ -8,7 +8,7 @@ import static model.TaskStatus.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private int id = 0;
@@ -85,17 +85,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public HashMap<Integer, Task> getTasksMap() {    //Получение HashMap'ов всех типов задач
-        return tasksMap;
+        return new HashMap<>(tasksMap);
     }
 
     @Override
     public HashMap<Integer, Epic> getEpicsMap() {
-        return epicsMap;
+        return new HashMap<>(epicsMap);
     }
 
     @Override
     public HashMap<Integer, SubTask> getSubTasksMap() {
-        return subTasksMap;
+        return new HashMap<>(subTasksMap);
     }
 
     @Override
@@ -193,7 +193,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public LinkedList<Task> getHistory() {
+    public List<Task> getHistory() {
         return history.getHistory();
     }
 }
