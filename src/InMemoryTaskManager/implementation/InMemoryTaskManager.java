@@ -1,14 +1,18 @@
 package InMemoryTaskManager.implementation;
 
-import InMemoryTaskManager.interfaces.*;
 import InMemoryTaskManager.Managers;
-import model.*;
+import InMemoryTaskManager.interfaces.HistoryManager;
+import InMemoryTaskManager.interfaces.TaskManager;
+import model.Epic;
+import model.SubTask;
 import model.Task;
-import static model.TaskStatus.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static model.TaskStatus.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private int id = 0;
@@ -100,11 +104,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearTask() {    //Полная очистка HashMap'ов
+        clearMemoryTask();
         tasksMap.clear();
     }
 
     @Override
     public void clearEpic() {    //При очистке Epic'а, нужно очистить и его subTask'и
+        clearMemoryEpic();
         epicsMap.clear();
         subTasksMap.clear();
     }
@@ -112,11 +118,30 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearSubTask() {    //При очистке subTask'ов нужно изменить статус Epic'а,
         // а также очистить списки idSubTask в Epic'ах
+        clearMemorySubTask();
         subTasksMap.clear();
         for (Integer id : epicsMap.keySet()) {
             epicsMap.get(id).setStatus(NEW);
             epicsMap.get(id).setIdSubTasks(null);
         }
+    }
+    private void clearMemoryTask(){
+        for (Map.Entry<Integer, Task> entry: tasksMap.entrySet()) {
+            history.remove(entry.getKey());
+        }
+    }
+
+    private void clearMemorySubTask(){
+        for (Map.Entry<Integer, SubTask> entry: subTasksMap.entrySet()) {
+            history.remove(entry.getKey());
+        }
+    }
+
+    private void clearMemoryEpic(){
+        for (Map.Entry<Integer, Epic> entry: epicsMap.entrySet()) {
+            history.remove(entry.getKey());
+        }
+        clearMemorySubTask();
     }
 
     @Override
@@ -145,6 +170,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeTask(int id) {    //Удаление одной конкретной задачи
         if (tasksMap.getOrDefault(id, null) != null) {
             tasksMap.remove(id);
+            history.remove(id);
         }
     }
 
@@ -153,8 +179,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (getSubTaskList(id) != null) {
             for (int i = 0; i < getSubTaskList(id).size(); i++) {
                 subTasksMap.remove(getSubTaskList(id).get(i));
+                history.remove(getSubTaskList(id).get(i));
             }
             epicsMap.remove(id);
+            history.remove(id);
         }
     }
 
@@ -164,6 +192,7 @@ public class InMemoryTaskManager implements TaskManager {
             getSubTaskList(subTasksMap.getOrDefault(id, null).getEpicId()).remove((Integer) id);
             updateStatusEpic(subTasksMap.getOrDefault(id, null).getEpicId());
             subTasksMap.remove(id);
+            history.remove(id);
         }
     }
 
