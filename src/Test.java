@@ -1,6 +1,5 @@
-import InMemoryTaskManager.implementation.InMemoryTaskManager;
-import InMemoryTaskManager.Managers;
-import InMemoryTaskManager.interfaces.TaskManager;
+import Manager.Managers;
+import Manager.interfaces.TaskManager;
 import model.*;
 
 public class Test {

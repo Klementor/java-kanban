@@ -1,4 +1,4 @@
-package InMemoryTaskManager.interfaces;
+package Manager.interfaces;
 
 import model.Task;
 import java.util.List;

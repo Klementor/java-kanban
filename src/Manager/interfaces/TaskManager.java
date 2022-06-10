@@ -1,11 +1,11 @@
-package InMemoryTaskManager.interfaces;
+package Manager.interfaces;
 
-import model.*;
+import model.Epic;
+import model.SubTask;
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface TaskManager {
 
@@ -21,13 +21,13 @@ public interface TaskManager {
 
     SubTask getSubTask(int id);
 
-    ArrayList<Integer> getSubTaskList(int epicId);
+    List<Integer> getSubTaskList(int epicId);
 
-    HashMap<Integer, Task> getTasksMap();
+    Map<Integer, Task> getTasksMap();
 
-    HashMap<Integer, Epic> getEpicsMap();
+    Map<Integer, Epic> getEpicsMap();
 
-    HashMap<Integer, SubTask> getSubTasksMap();
+    Map<Integer, SubTask> getSubTasksMap();
 
     void clearTask();
 

@@ -1,8 +1,8 @@
-package InMemoryTaskManager.implementation;
+package Manager.implementation;
 
-import InMemoryTaskManager.Managers;
-import InMemoryTaskManager.interfaces.HistoryManager;
-import InMemoryTaskManager.interfaces.TaskManager;
+import Manager.Managers;
+import Manager.interfaces.HistoryManager;
+import Manager.interfaces.TaskManager;
 import model.Epic;
 import model.SubTask;
 import model.Task;
@@ -16,9 +16,9 @@ import static model.TaskStatus.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private int id = 0;
-    private final HashMap<Integer, Task> tasksMap;
-    private final HashMap<Integer, Epic> epicsMap;
-    private final HashMap<Integer, SubTask> subTasksMap;
+    private final Map<Integer, Task> tasksMap;
+    private final Map<Integer, Epic> epicsMap;
+    private final Map<Integer, SubTask> subTasksMap;
     private final HistoryManager history;
 
     public InMemoryTaskManager() {
@@ -125,6 +125,7 @@ public class InMemoryTaskManager implements TaskManager {
             epicsMap.get(id).setIdSubTasks(null);
         }
     }
+
     private void clearMemoryTask(){
         for (Map.Entry<Integer, Task> entry: tasksMap.entrySet()) {
             history.remove(entry.getKey());
