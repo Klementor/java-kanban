@@ -7,6 +7,7 @@ public class Task {
     private String description;
     private int id;
     private TaskStatus status;
+    public static final TaskType TYPE = TaskType.TASK;
 
     public Task(String title, String description, TaskStatus taskStatus) {
         this.title = title;

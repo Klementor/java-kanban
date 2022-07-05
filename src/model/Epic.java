@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public class Epic extends Task {
     private ArrayList<Integer> idSubTasks;
+    public static final TaskType TYPE = TaskType.EPIC;
 
     public Epic(String title, String description, TaskStatus taskStatus) {
         super(title, description, taskStatus);

@@ -126,20 +126,20 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private void clearMemoryTask(){
-        for (Map.Entry<Integer, Task> entry: tasksMap.entrySet()) {
+    public void clearMemoryTask() {
+        for (Map.Entry<Integer, Task> entry : tasksMap.entrySet()) {
             history.remove(entry.getKey());
         }
     }
 
-    private void clearMemorySubTask(){
-        for (Map.Entry<Integer, SubTask> entry: subTasksMap.entrySet()) {
+    public void clearMemorySubTask() {
+        for (Map.Entry<Integer, SubTask> entry : subTasksMap.entrySet()) {
             history.remove(entry.getKey());
         }
     }
 
-    private void clearMemoryEpic(){
-        for (Map.Entry<Integer, Epic> entry: epicsMap.entrySet()) {
+    public void clearMemoryEpic() {
+        for (Map.Entry<Integer, Epic> entry : epicsMap.entrySet()) {
             history.remove(entry.getKey());
         }
         clearMemorySubTask();
@@ -206,7 +206,6 @@ public class InMemoryTaskManager implements TaskManager {
                 if (subTasksMap.getOrDefault(getSubTaskList(id).get(i), null) != null) {
                     if (subTasksMap.getOrDefault((getSubTaskList(id).get(i)), null).getStatus() == IN_PROGRESS) {
                         statusInProgress++;
-
                     } else {
                         statusDone++;
                     }

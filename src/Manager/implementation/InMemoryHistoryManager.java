@@ -30,7 +30,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private static class CustomLinkedList<T extends Task> {
-        private Map<Integer, Node<T>> memory = new HashMap<>();
+        private final Map<Integer, Node<T>> memory = new HashMap<>();
         private Node<T> tail;
         private Node<T> head;
 
