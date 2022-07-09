@@ -1,8 +1,8 @@
-package Manager.implementation;
+package manager.implementation;
 
-import Manager.Managers;
-import Manager.interfaces.HistoryManager;
-import Manager.interfaces.TaskManager;
+import manager.Managers;
+import manager.interfaces.HistoryManager;
+import manager.interfaces.TaskManager;
 import model.Epic;
 import model.SubTask;
 import model.Task;
@@ -224,5 +224,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return history.getHistory();
+    }
+
+    public HistoryManager getHistoryManager(){
+        return history;
     }
 }

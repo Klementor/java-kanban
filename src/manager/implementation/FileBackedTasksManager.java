@@ -1,13 +1,16 @@
-package Manager.implementation;
+package manager.implementation;
 
+import manager.interfaces.HistoryManager;
 import model.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static model.TaskType.SUBTASK;
 import static model.TaskType.TASK;
@@ -15,10 +18,10 @@ import static model.TaskType.TASK;
 public class FileBackedTasksManager extends InMemoryTaskManager {
     Path path;
 
-    public FileBackedTasksManager(Path path) {
-        this.path = path;
+    public FileBackedTasksManager(File file) {
+        this.path = file.toPath();
         if (Files.exists(path)) {
-            loadFromFile(path);
+            loadFromFile(file);
         } else {
             try {
                 Files.createFile(path);
@@ -44,22 +47,33 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 writer.write("\n");
             }
             writer.write("\n");
-            writer.write(getHistoryString(getHistory()));
+            writer.write(toString(getHistoryManager()));
         } catch (IOException e) {
             e.printStackTrace();
             throw new ManagerSaveException(e.getMessage());
         }
     }
 
-    public void loadFromFile(Path path) {
-        try (Reader reader = new FileReader(path.toString(), StandardCharsets.UTF_8);
+    public void loadFromFile(File file) {
+        try (Reader reader = new FileReader(file.toPath().toString(), StandardCharsets.UTF_8);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
             bufferedReader.readLine();
             while (bufferedReader.ready()) {
                 String str = bufferedReader.readLine();
                 if (str != null && str.isEmpty()) {
                     String history = bufferedReader.readLine();
-                    historyToList(history);
+                    List<Integer> tasks = fromString(history);
+                    Map<Integer, Task> taskMap = getTasksMap();
+                    Map<Integer, SubTask> subTaskMap = getSubTasksMap();
+                    for (Integer taskId : tasks) {
+                        if (taskMap.containsKey(taskId)) {
+                            super.getTask(taskId);
+                        } else if (subTaskMap.containsKey(taskId)) {
+                            super.getSubTask(taskId);
+                        } else {
+                            super.getEpic(taskId);
+                        }
+                    }
                     return;
                 }
                 addTaskType(str);
@@ -69,23 +83,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public void historyToList(String history) {
-        if (history == null || history.equals("")) {
-            return;
-        }
-        String[] historyList = history.split(",");
-        Map<Integer, Task> taskMap = getTasksMap();
-        Map<Integer, SubTask> subTaskMap = getSubTasksMap();
+    public static String toString(HistoryManager manager) {
+        List<Task> tasks = manager.getHistory();
+        String task = tasks.stream()
+                .mapToInt(Task::getId)
+                .mapToObj(String::valueOf)
+                .collect(Collectors.joining(","));
+        return task;
+    }
+
+    public static List<Integer> fromString(String value) {
+        List<Integer> tasks = new ArrayList<>();
+        String[] historyList = value.split(",");
         for (String task : historyList) {
-            int taskId = Integer.parseInt(task);
-            if (taskMap.containsKey(taskId)) {
-                super.getTask(taskId);
-            } else if (subTaskMap.containsKey(taskId)) {
-                super.getSubTask(taskId);
-            } else {
-                super.getEpic(taskId);
-            }
+            tasks.add(Integer.parseInt(task));
         }
+        return tasks;
     }
 
     public void addTaskType(String str) {
@@ -111,19 +124,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public Epic getEpicFromString(String[] mass) {
         return new Epic(mass[2], mass[4], TaskStatus.valueOf(mass[3]));
-    }
-
-    public String getHistoryString(List<Task> list) {
-        if (!list.isEmpty()) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (Task task : list) {
-                stringBuilder.append(task.getId());
-                stringBuilder.append(",");
-            }
-            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-            return stringBuilder.toString();
-        }
-        return "";
     }
 
     public String getTaskString(Task task) {
@@ -167,8 +167,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private String getHeader() {
         StringBuilder str = new StringBuilder();
-        namesOfColumn[] columns = namesOfColumn.values();
-        for (namesOfColumn column : columns) {
+        NamesOfColumn[] columns = NamesOfColumn.values();
+        for (NamesOfColumn column : columns) {
             str.append(column.name());
             str.append(",");
         }

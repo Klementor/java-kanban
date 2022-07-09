@@ -1,4 +1,4 @@
-package Manager.interfaces;
+package manager.interfaces;
 
 import model.Epic;
 import model.SubTask;

@@ -1,5 +1,5 @@
-import Manager.Managers;
-import Manager.interfaces.TaskManager;
+import manager.Managers;
+import manager.interfaces.TaskManager;
 
 public class Test {
     TaskManager taskManager = Managers.getDefault();

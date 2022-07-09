@@ -1,6 +1,6 @@
-package Manager.implementation;
+package manager.implementation;
 
-public enum namesOfColumn {
+public enum NamesOfColumn {
     id,
     type,
     name,
