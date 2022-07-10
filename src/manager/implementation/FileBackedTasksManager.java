@@ -18,21 +18,11 @@ import static model.TaskType.TASK;
 public class FileBackedTasksManager extends InMemoryTaskManager {
     Path path;
 
-    public FileBackedTasksManager(File file) {
+    private FileBackedTasksManager(File file) {
         this.path = file.toPath();
-        if (Files.exists(path)) {
-            loadFromFile(file);
-        } else {
-            try {
-                Files.createFile(path);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
-
     public void save() {
-        addHeader();
+        WorkWithHeader.addHeader(path);
         try (Writer writer = new FileWriter(path.toString(), StandardCharsets.UTF_8, true)) {
             for (Map.Entry<Integer, Task> entry : getTasksMap().entrySet()) {
                 writer.write(getTaskString(entry.getValue()));
@@ -54,33 +44,57 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public void loadFromFile(File file) {
-        try (Reader reader = new FileReader(file.toPath().toString(), StandardCharsets.UTF_8);
-             BufferedReader bufferedReader = new BufferedReader(reader)) {
-            bufferedReader.readLine();
-            while (bufferedReader.ready()) {
-                String str = bufferedReader.readLine();
-                if (str != null && str.isEmpty()) {
-                    String history = bufferedReader.readLine();
-                    List<Integer> tasks = fromString(history);
-                    Map<Integer, Task> taskMap = getTasksMap();
-                    Map<Integer, SubTask> subTaskMap = getSubTasksMap();
-                    for (Integer taskId : tasks) {
-                        if (taskMap.containsKey(taskId)) {
-                            super.getTask(taskId);
-                        } else if (subTaskMap.containsKey(taskId)) {
-                            super.getSubTask(taskId);
-                        } else {
-                            super.getEpic(taskId);
+    public static FileBackedTasksManager loadFromFile(File file) {
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
+        if (Files.exists(file.toPath())) {
+            try (Reader reader = new FileReader(file.toPath().toString(), StandardCharsets.UTF_8);
+                 BufferedReader bufferedReader = new BufferedReader(reader)) {
+                bufferedReader.readLine();
+                while (bufferedReader.ready()) {
+                    String str = bufferedReader.readLine();
+                    if (str != null && str.isEmpty()) {
+                        String history = bufferedReader.readLine();
+                        List<Integer> tasks = fromString(history);
+                        Map<Integer, Task> taskMap = fileBackedTasksManager.getTasksMap();
+                        Map<Integer, SubTask> subTaskMap = fileBackedTasksManager.getSubTasksMap();
+                        if (tasks != null) {
+                            for (Integer taskId : tasks) {
+                                if (taskMap.containsKey(taskId)) {
+                                    fileBackedTasksManager.getTaskSuper(taskId);
+                                } else if (subTaskMap.containsKey(taskId)) {
+                                    fileBackedTasksManager.getSubTaskSuper(taskId);
+                                } else {
+                                    fileBackedTasksManager.getEpicSuper(taskId);
+                                }
+                            }
                         }
+                    } else {
+                        fileBackedTasksManager.addTaskType(str);
                     }
-                    return;
                 }
-                addTaskType(str);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            try {
+                Files.createFile(file.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        return fileBackedTasksManager;
+    }
+
+    private void getTaskSuper(int id) {
+        super.getTask(id);
+    }
+
+    private void getEpicSuper(int id) {
+        super.getEpic(id);
+    }
+
+    private void getSubTaskSuper(int id) {
+        super.getSubTask(id);
     }
 
     public static String toString(HistoryManager manager) {
@@ -94,7 +108,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static List<Integer> fromString(String value) {
         List<Integer> tasks = new ArrayList<>();
+        if (value == null) {
+            return null;
+        }
         String[] historyList = value.split(",");
+
         for (String task : historyList) {
             tasks.add(Integer.parseInt(task));
         }
@@ -155,25 +173,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 subTask.getDescription(),
                 Integer.toString(subTask.getEpicId())
         });
-    }
-
-    private void addHeader() {
-        try (Writer writer = new FileWriter(path.toString(), StandardCharsets.UTF_8, false)) {
-            writer.write(getHeader() + "\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String getHeader() {
-        StringBuilder str = new StringBuilder();
-        NamesOfColumn[] columns = NamesOfColumn.values();
-        for (NamesOfColumn column : columns) {
-            str.append(column.name());
-            str.append(",");
-        }
-        str.deleteCharAt(str.length() - 1);
-        return str.toString();
     }
 
     @Override
