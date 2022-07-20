@@ -6,5 +6,7 @@ public enum NamesOfColumn {
     name,
     status,
     description,
-    epic
+    epic,
+    duration,
+    startTime
 }
