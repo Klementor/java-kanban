@@ -29,12 +29,12 @@ public class SubTask extends Task {
         this.epicId = epicId;
     }
 
-    public SubTask(int id, String title, String description, int epicId){
+    public SubTask(int id, String title, String description, int epicId) {
         super(id, title, description, TaskStatus.NEW);
         this.epicId = epicId;
     }
 
-    public SubTask(int id, String title, String description, int epicId, LocalDateTime startTime, Duration duration){
+    public SubTask(int id, String title, String description, int epicId, LocalDateTime startTime, Duration duration) {
         super(id, title, description, TaskStatus.NEW, startTime, duration);
         this.epicId = epicId;
     }

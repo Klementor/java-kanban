@@ -19,7 +19,7 @@ public class Epic extends Task {
         super(title, description, TaskStatus.NEW);
     }
 
-    public Epic(int id, String title, String description, TaskStatus taskStatus){
+    public Epic(int id, String title, String description, TaskStatus taskStatus) {
         super(id, title, description, taskStatus);
     }
 
@@ -31,7 +31,7 @@ public class Epic extends Task {
         super(title, description, TaskStatus.NEW, startTime, duration);
     }
 
-    public Epic(int id, String title, String description, TaskStatus taskStatus, LocalDateTime startTime, Duration duration){
+    public Epic(int id, String title, String description, TaskStatus taskStatus, LocalDateTime startTime, Duration duration) {
         super(id, title, description, taskStatus, startTime, duration);
     }
 
@@ -44,8 +44,12 @@ public class Epic extends Task {
     }
 
     @Override
-    public Optional<LocalDateTime> getEndTime(){
-        return Optional.of(endTime);
+    public Optional<LocalDateTime> getEndTime() {
+        if(endTime == null){
+            return Optional.empty();
+        } else {
+            return Optional.of(endTime);
+        }
     }
 
     public void setEndTime(LocalDateTime endTime) {

@@ -7,6 +7,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +24,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private FileBackedTasksManager(File file) {
         this.path = file.toPath();
     }
+
     public void save() {
         WorkWithHeader.addHeader(path);
         try (Writer writer = new FileWriter(path.toString(), StandardCharsets.UTF_8, true)) {
@@ -133,45 +137,120 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public Task getTaskFromString(String[] mass) {
-        return new Task(mass[2], mass[4], TaskStatus.valueOf(mass[3]));
+        if (mass[6].equals(" ")){
+            return new Task(mass[2],
+                    mass[4],
+                    TaskStatus.valueOf(mass[3]),
+                    null,
+                    null);
+        }
+        return new Task(mass[2],
+                mass[4],
+                TaskStatus.valueOf(mass[3]),
+                LocalDateTime.parse(mass[6], DateTimeFormatter.ISO_DATE_TIME),
+                Duration.ofMinutes(Integer.parseInt(mass[5])));
     }
 
     public SubTask getSubTaskFromString(String[] mass) {
-        return new SubTask(mass[2], mass[4], TaskStatus.valueOf(mass[3]), Integer.parseInt(mass[5]));
+        if (mass[6].equals(" ")){
+            return new SubTask(mass[2],
+                    mass[4],
+                    TaskStatus.valueOf(mass[3]),
+                    Integer.parseInt(mass[5]),
+                    null,
+                    null);
+        }
+        return new SubTask(mass[2],
+                mass[4],
+                TaskStatus.valueOf(mass[3]),
+                Integer.parseInt(mass[5]),
+                LocalDateTime.parse(mass[6], DateTimeFormatter.ISO_DATE_TIME),
+                Duration.ofMinutes(Integer.parseInt(mass[5])));
     }
 
     public Epic getEpicFromString(String[] mass) {
-        return new Epic(mass[2], mass[4], TaskStatus.valueOf(mass[3]));
+        if(mass[6].equals(" ")){
+            return new Epic(mass[2],
+                    mass[4],
+                    TaskStatus.valueOf(mass[3]),
+                    null,
+                    null);
+        }
+        return new Epic(mass[2],
+                mass[4],
+                TaskStatus.valueOf(mass[3]),
+                LocalDateTime.parse(mass[6], DateTimeFormatter.ISO_DATE_TIME),
+                Duration.ofMinutes(Integer.parseInt(mass[5])));
     }
 
     public String getTaskString(Task task) {
+        if( task.getStartTime() == null) {
+            return String.join(",", new String[]{
+                    Integer.toString(task.getId()),
+                    Task.TYPE.name(),
+                    task.getTitle(),
+                    task.getStatus().name(),
+                    task.getDescription(),
+                    " ",
+                    " "
+            });
+        }
         return String.join(",", new String[]{
                 Integer.toString(task.getId()),
                 Task.TYPE.name(),
                 task.getTitle(),
                 task.getStatus().name(),
-                task.getDescription()
+                task.getDescription(),
+                String.valueOf(task.getDuration()),
+                task.getStartTime().format(DateTimeFormatter.ISO_DATE_TIME)
         });
     }
 
     public String getTaskString(Epic epic) {
+        if (epic.getStartTime() == null){
+            return String.join(",", new String[]{
+                    Integer.toString(epic.getId()),
+                    Epic.TYPE.name(),
+                    epic.getTitle(),
+                    epic.getStatus().name(),
+                    epic.getDescription(),
+                    " ",
+                    " "
+            });
+        }
         return String.join(",", new String[]{
                 Integer.toString(epic.getId()),
                 Epic.TYPE.name(),
                 epic.getTitle(),
                 epic.getStatus().name(),
-                epic.getDescription()
+                epic.getDescription(),
+                String.valueOf(epic.getDuration()),
+                epic.getStartTime().format(DateTimeFormatter.ISO_DATE_TIME)
         });
     }
 
     public String getTaskString(SubTask subTask) {
+        if (subTask.getStartTime() == null){
+            return String.join(",", new String[]{
+                    Integer.toString(subTask.getId()),
+                    SubTask.TYPE.name(),
+                    subTask.getTitle(),
+                    subTask.getStatus().name(),
+                    subTask.getDescription(),
+                    Integer.toString(subTask.getEpicId()),
+                    " ",
+                    " "
+            });
+        }
         return String.join(",", new String[]{
                 Integer.toString(subTask.getId()),
                 SubTask.TYPE.name(),
                 subTask.getTitle(),
                 subTask.getStatus().name(),
                 subTask.getDescription(),
-                Integer.toString(subTask.getEpicId())
+                Integer.toString(subTask.getEpicId()),
+                String.valueOf(subTask.getDuration()),
+                subTask.getStartTime().format(DateTimeFormatter.ISO_DATE_TIME)
         });
     }
 
