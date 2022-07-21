@@ -10,7 +10,6 @@ public class Task {
     private String description;
     private int id;
     private TaskStatus status;
-    public static final TaskType TYPE = TaskType.TASK;
     private LocalDateTime startTime;
     private Duration duration;
 
@@ -56,6 +55,10 @@ public class Task {
         this.status = taskStatus;
         this.startTime = startTime;
         this.duration = duration;
+    }
+
+    public TaskType getTaskType() {
+        return TaskType.TASK;
     }
 
     public void setTitle(String title) {

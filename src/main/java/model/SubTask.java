@@ -6,7 +6,6 @@ import java.util.Objects;
 
 public class SubTask extends Task {
     private int epicId;
-    public static final TaskType TYPE = TaskType.SUBTASK;
 
     public SubTask(String title, String description, TaskStatus taskStatus, int epicId) {
         super(title, description, taskStatus);
@@ -45,6 +44,11 @@ public class SubTask extends Task {
 
     public void setEpicId(int epicId) {
         this.epicId = epicId;
+    }
+
+    @Override
+    public TaskType getTaskType() {
+        return TaskType.SUBTASK;
     }
 
     @Override

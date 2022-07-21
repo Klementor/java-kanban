@@ -279,7 +279,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public void startTimeForEpic(int epicId) {
+    private void startTimeForEpic(int epicId) {
         getEpicForMetod(epicId).getIdSubTasks()
                 .stream()
                 .map(this::getSubtaskForMetod)
@@ -289,7 +289,7 @@ public class InMemoryTaskManager implements TaskManager {
                 .ifPresent(getEpicForMetod(epicId)::setStartTime);
     }
 
-    public void sumOfDuration(int epicId) {
+    private void sumOfDuration(int epicId) {
         List<Integer> subTasks = getSubTaskList(epicId);
         Duration duration = Duration.ZERO;
         for (Integer subTask : subTasks) {
@@ -304,7 +304,7 @@ public class InMemoryTaskManager implements TaskManager {
         epicsMap.get(epicId).setDuration(duration);
     }
 
-    public void getEndTime(int epicId) {
+    private void getEndTime(int epicId) {
         getEpicForMetod(epicId).getIdSubTasks()
                 .stream()
                 .map(this::getSubtaskForMetod)
@@ -314,11 +314,11 @@ public class InMemoryTaskManager implements TaskManager {
                 .ifPresent(getEpicForMetod(epicId)::setEndTime);
     }
 
-    public List<Task> getListOfTasksSortedByTime() {
+    private List<Task> getListOfTasksSortedByTime() {
         return new ArrayList<>(listOfTasksSortedByTime);
     }
 
-    public void comparisonOfTasksOverTime(Task myTask) {
+    private void comparisonOfTasksOverTime(Task myTask) {
         if (myTask.getStartTime() ==null){
             return;
         }
@@ -333,11 +333,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public Epic getEpicForMetod(int id) {
+    private Epic getEpicForMetod(int id) {
         return epicsMap.get(id);
     }
 
-    public SubTask getSubtaskForMetod(int id) {
+    private SubTask getSubtaskForMetod(int id) {
         return subTasksMap.get(id);
     }
 
@@ -346,6 +346,7 @@ public class InMemoryTaskManager implements TaskManager {
         return history.getHistory();
     }
 
+    @Override
     public HistoryManager getHistoryManager() {
         return history;
     }

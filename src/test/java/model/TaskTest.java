@@ -34,7 +34,7 @@ class TaskTest {
         assertEquals(1, actualTask.getId());
         assertEquals(TaskStatus.DONE, actualTask.getStatus());
         assertEquals("Dr", actualTask.getTitle());
-        assertEquals("Task{title='Dr', description='The characteristics of someone or something', id=1, status='DONE'}",
+        assertEquals("Task{title='Dr', description='The characteristics of someone or something', id=1, status=DONE, startTime=null, duration=null}",
                 actualToStringResult);
     }
 
@@ -66,7 +66,7 @@ class TaskTest {
         assertEquals(1, actualTask.getId());
         assertEquals(TaskStatus.DONE, actualTask.getStatus());
         assertEquals("Dr", actualTask.getTitle());
-        assertEquals("Task{title='Dr', description='The characteristics of someone or something', id=1, status='DONE'}",
+        assertEquals("Task{title='Dr', description='The characteristics of someone or something', id=1, status=DONE, startTime=null, duration=null}",
                 actualToStringResult);
     }
 

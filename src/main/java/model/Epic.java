@@ -8,7 +8,6 @@ import java.util.Optional;
 
 public class Epic extends Task {
     private ArrayList<Integer> idSubTasks = new ArrayList<>();
-    public static final TaskType TYPE = TaskType.EPIC;
     private LocalDateTime endTime;
 
     public Epic(String title, String description, TaskStatus taskStatus) {
@@ -44,6 +43,11 @@ public class Epic extends Task {
     }
 
     @Override
+    public TaskType getTaskType() {
+        return TaskType.EPIC;
+    }
+
+    @Override
     public Optional<LocalDateTime> getEndTime() {
         if(endTime == null){
             return Optional.empty();
@@ -60,6 +64,7 @@ public class Epic extends Task {
     public String toString() {
         return "Epic{" +
                 "idSubTasks=" + idSubTasks +
+                ", endTime=" + endTime +
                 '}';
     }
 
@@ -69,11 +74,11 @@ public class Epic extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Epic epic = (Epic) o;
-        return Objects.equals(idSubTasks, epic.idSubTasks);
+        return Objects.equals(idSubTasks, epic.idSubTasks) && Objects.equals(endTime, epic.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), idSubTasks);
+        return Objects.hash(super.hashCode(), idSubTasks, endTime);
     }
 }

@@ -1,5 +1,6 @@
 package manager.implementation;
 
+import manager.exception.ManagerSaveException;
 import manager.interfaces.HistoryManager;
 import model.*;
 
@@ -19,7 +20,7 @@ import static model.TaskType.SUBTASK;
 import static model.TaskType.TASK;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    Path path;
+    private final Path path;
 
     private FileBackedTasksManager(File file) {
         this.path = file.toPath();
@@ -126,68 +127,71 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void addTaskType(String str) {
         String[] taskArray = str.split(",");
         String type = taskArray[1];
-        TaskType TYPE = TaskType.valueOf(type);
-        if (TYPE.equals(TASK)) {
-            super.addTask(getTaskFromString(taskArray));
-        } else if (TYPE.equals(SUBTASK)) {
-            super.addSubTask(getSubTaskFromString(taskArray));
+        TaskType taskType = TaskType.valueOf(type);
+        if (taskType == TASK) {
+            super.addTask(getTaskFromString(taskArray[2], taskArray[3], taskArray[4], taskArray[5], taskArray[6]));
+        } else if (taskType.equals(SUBTASK)) {
+            super.addSubTask(getSubTaskFromString(taskArray[2], taskArray[3], taskArray[4], taskArray[5], taskArray[6], taskArray[7]));
         } else {
-            super.addEpic(getEpicFromString(taskArray));
+            super.addEpic(getEpicFromString(taskArray[2], taskArray[3], taskArray[4], taskArray[5], taskArray[6]));
         }
     }
 
-    public Task getTaskFromString(String[] mass) {
-        if (mass[6].equals(" ")){
-            return new Task(mass[2],
-                    mass[4],
-                    TaskStatus.valueOf(mass[3]),
+    public Task getTaskFromString(String name, String taskStatus,
+                                  String description, String duration, String startTime) {
+        if (startTime.equals(" ")) {
+            return new Task(name,
+                    description,
+                    TaskStatus.valueOf(taskStatus),
                     null,
                     null);
         }
-        return new Task(mass[2],
-                mass[4],
-                TaskStatus.valueOf(mass[3]),
-                LocalDateTime.parse(mass[6], DateTimeFormatter.ISO_DATE_TIME),
-                Duration.ofMinutes(Integer.parseInt(mass[5])));
+        return new Task(name,
+                description,
+                TaskStatus.valueOf(taskStatus),
+                LocalDateTime.parse(startTime, DateTimeFormatter.ISO_DATE_TIME),
+                Duration.ofMinutes(Integer.parseInt(duration)));
     }
 
-    public SubTask getSubTaskFromString(String[] mass) {
-        if (mass[6].equals(" ")){
-            return new SubTask(mass[2],
-                    mass[4],
-                    TaskStatus.valueOf(mass[3]),
-                    Integer.parseInt(mass[5]),
+    public SubTask getSubTaskFromString(String name, String taskStatus,
+                                        String description, String epicId, String duration, String startTime) {
+        if (startTime.equals(" ")) {
+            return new SubTask(name,
+                    description,
+                    TaskStatus.valueOf(taskStatus),
+                    Integer.parseInt(epicId),
                     null,
                     null);
         }
-        return new SubTask(mass[2],
-                mass[4],
-                TaskStatus.valueOf(mass[3]),
-                Integer.parseInt(mass[5]),
-                LocalDateTime.parse(mass[6], DateTimeFormatter.ISO_DATE_TIME),
-                Duration.ofMinutes(Integer.parseInt(mass[5])));
+        return new SubTask(name,
+                description,
+                TaskStatus.valueOf(taskStatus),
+                Integer.parseInt(epicId),
+                LocalDateTime.parse(startTime, DateTimeFormatter.ISO_DATE_TIME),
+                Duration.ofMinutes(Integer.parseInt(duration)));
     }
 
-    public Epic getEpicFromString(String[] mass) {
-        if(mass[6].equals(" ")){
-            return new Epic(mass[2],
-                    mass[4],
-                    TaskStatus.valueOf(mass[3]),
+    public Epic getEpicFromString(String name, String taskStatus,
+                                  String description, String duration, String startTime) {
+        if (startTime.equals(" ")) {
+            return new Epic(name,
+                    description,
+                    TaskStatus.valueOf(taskStatus),
                     null,
                     null);
         }
-        return new Epic(mass[2],
-                mass[4],
-                TaskStatus.valueOf(mass[3]),
-                LocalDateTime.parse(mass[6], DateTimeFormatter.ISO_DATE_TIME),
-                Duration.ofMinutes(Integer.parseInt(mass[5])));
+        return new Epic(name,
+                description,
+                TaskStatus.valueOf(taskStatus),
+                LocalDateTime.parse(startTime, DateTimeFormatter.ISO_DATE_TIME),
+                Duration.ofMinutes(Integer.parseInt(duration)));
     }
 
     public String getTaskString(Task task) {
-        if( task.getStartTime() == null) {
+        if (task.getStartTime() == null) {
             return String.join(",", new String[]{
                     Integer.toString(task.getId()),
-                    Task.TYPE.name(),
+                    task.getTaskType().name(),
                     task.getTitle(),
                     task.getStatus().name(),
                     task.getDescription(),
@@ -197,7 +201,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
         return String.join(",", new String[]{
                 Integer.toString(task.getId()),
-                Task.TYPE.name(),
+                task.getTaskType().name(),
                 task.getTitle(),
                 task.getStatus().name(),
                 task.getDescription(),
@@ -207,10 +211,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public String getTaskString(Epic epic) {
-        if (epic.getStartTime() == null){
+        if (epic.getStartTime() == null) {
             return String.join(",", new String[]{
                     Integer.toString(epic.getId()),
-                    Epic.TYPE.name(),
+                    epic.getTaskType().name(),
                     epic.getTitle(),
                     epic.getStatus().name(),
                     epic.getDescription(),
@@ -220,7 +224,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
         return String.join(",", new String[]{
                 Integer.toString(epic.getId()),
-                Epic.TYPE.name(),
+                epic.getTaskType().name(),
                 epic.getTitle(),
                 epic.getStatus().name(),
                 epic.getDescription(),
@@ -230,10 +234,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public String getTaskString(SubTask subTask) {
-        if (subTask.getStartTime() == null){
+        if (subTask.getStartTime() == null) {
             return String.join(",", new String[]{
                     Integer.toString(subTask.getId()),
-                    SubTask.TYPE.name(),
+                    subTask.getTaskType().name(),
                     subTask.getTitle(),
                     subTask.getStatus().name(),
                     subTask.getDescription(),
@@ -244,7 +248,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
         return String.join(",", new String[]{
                 Integer.toString(subTask.getId()),
-                SubTask.TYPE.name(),
+                subTask.getTaskType().name(),
                 subTask.getTitle(),
                 subTask.getStatus().name(),
                 subTask.getDescription(),
