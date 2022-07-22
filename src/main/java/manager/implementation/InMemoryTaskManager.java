@@ -20,7 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, SubTask> subTasksMap;
     private final HistoryManager history;
     private final TreeSet<Task> listOfTasksSortedByTime;
-    private final List<Task> listOfTaskWithoutStartTime;
+    private final Set<Task> listOfTaskWithoutStartTime;
 
     public InMemoryTaskManager() {
         this.tasksMap = new HashMap<>();
@@ -28,7 +28,8 @@ public class InMemoryTaskManager implements TaskManager {
         this.subTasksMap = new HashMap<>();
         this.history = Managers.getDefaultHistory();
         this.listOfTasksSortedByTime = new TreeSet<>(Comparator.comparing(Task::getStartTime));
-        listOfTaskWithoutStartTime = new ArrayList<>();
+        this.listOfTaskWithoutStartTime = new HashSet<>() {
+        };
     }
 
     @Override
@@ -294,7 +295,7 @@ public class InMemoryTaskManager implements TaskManager {
         Duration duration = Duration.ZERO;
         for (Integer subTask : subTasks) {
             Duration durationSubTask;
-            if (getSubTask(subTask).getDuration() == null){
+            if (getSubTask(subTask).getDuration() == null) {
                 continue;
             }
             durationSubTask = getSubTask(subTask).getDuration();
@@ -314,12 +315,8 @@ public class InMemoryTaskManager implements TaskManager {
                 .ifPresent(getEpicForMetod(epicId)::setEndTime);
     }
 
-    private List<Task> getListOfTasksSortedByTime() {
-        return new ArrayList<>(listOfTasksSortedByTime);
-    }
-
     private void comparisonOfTasksOverTime(Task myTask) {
-        if (myTask.getStartTime() ==null){
+        if (myTask.getStartTime() == null) {
             return;
         }
         listOfTasksSortedByTime.add(myTask);

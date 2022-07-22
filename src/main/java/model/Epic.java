@@ -49,7 +49,7 @@ public class Epic extends Task {
 
     @Override
     public Optional<LocalDateTime> getEndTime() {
-        if(endTime == null){
+        if (endTime == null) {
             return Optional.empty();
         } else {
             return Optional.of(endTime);

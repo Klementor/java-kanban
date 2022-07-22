@@ -30,9 +30,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic = new Epic("Выгулять кота", "Гулять с ним 30 минут");
         taskManager.addEpic(epic);
         SubTask subTask = new SubTask("Выйти на улицу", "Будем спортсменами и спустимся по лестнице",
-                TaskStatus.NEW, 0,  LocalDateTime.of(2022, 12,21, 10, 25), Duration.ofMinutes(10));
+                TaskStatus.NEW, 0, LocalDateTime.of(2022, 12, 21, 10, 25), Duration.ofMinutes(10));
         SubTask subTask1 = new SubTask("a", "b", TaskStatus.NEW, 0,
-                LocalDateTime.of(2022, 12,21, 10, 45), Duration.ofMinutes(15));
+                LocalDateTime.of(2022, 12, 21, 10, 45), Duration.ofMinutes(15));
         taskManager.addSubTask(subTask);
         taskManager.addSubTask(subTask1);
         TaskStatus epicsStatus = taskManager.getEpic(0).getStatus();
@@ -41,54 +41,54 @@ abstract class TaskManagerTest<T extends TaskManager> {
         int idEpic1 = subTask1.getEpicId();
         assertTrue(taskManager.getEpicsMap().containsKey(idEpic));
         assertTrue(taskManager.getEpicsMap().containsKey(idEpic1));
-        assertEquals(LocalDateTime.of(2022, 12,21, 10, 25) , subTask.getStartTime());
+        assertEquals(LocalDateTime.of(2022, 12, 21, 10, 25), subTask.getStartTime());
         assertEquals(Duration.ofMinutes(10), subTask.getDuration());
-        assertEquals(LocalDateTime.of(2022, 12,21, 10, 45), subTask1.getStartTime());
+        assertEquals(LocalDateTime.of(2022, 12, 21, 10, 45), subTask1.getStartTime());
         assertEquals(Duration.ofMinutes(15), subTask1.getDuration());
     }
 
     @Test
     public void testingAddTest() {
-        Task task = new Task("а", "b", LocalDateTime.of(2022, 12,21, 10, 25), Duration.ofMinutes(10));
+        Task task = new Task("а", "b", LocalDateTime.of(2022, 12, 21, 10, 25), Duration.ofMinutes(10));
         taskManager.addTask(task);
         assertEquals(taskManager.getTask(0).getTitle(), task.getTitle());
         assertEquals(taskManager.getTask(0).getDescription(), task.getDescription());
-        assertEquals(LocalDateTime.of(2022, 12,21, 10, 25), task.getStartTime());
+        assertEquals(LocalDateTime.of(2022, 12, 21, 10, 25), task.getStartTime());
         assertEquals(Duration.ofMinutes(10), task.getDuration());
     }
 
     @Test
     public void testingAddEpic() {
         Epic epic = new Epic("Выгулять кота", "Гулять с ним 30 минут",
-                LocalDateTime.of(2022, 12,21, 10, 25), Duration.ofMinutes(10));
+                LocalDateTime.of(2022, 12, 21, 10, 25), Duration.ofMinutes(10));
         taskManager.addEpic(epic);
         assertEquals(taskManager.getEpic(0).getTitle(), epic.getTitle());
         assertEquals(taskManager.getEpic(0).getDescription(), epic.getDescription());
         assertEquals(taskManager.getEpic(0).getStatus(), TaskStatus.NEW);
-        assertEquals(LocalDateTime.of(2022, 12,21, 10, 25), epic.getStartTime());
+        assertEquals(LocalDateTime.of(2022, 12, 21, 10, 25), epic.getStartTime());
         assertEquals(Duration.ofMinutes(10), epic.getDuration());
     }
 
     @Test
     public void testingAddSubTask() {
-        Epic epic = new Epic("Выгулять кота", "Гулять с ним 30 минут", LocalDateTime.of(2022, 12,21, 10, 25), Duration.ofMinutes(10));
+        Epic epic = new Epic("Выгулять кота", "Гулять с ним 30 минут", LocalDateTime.of(2022, 12, 21, 10, 25), Duration.ofMinutes(10));
         SubTask subTask = new SubTask("Выйти на улицу", "Будем спортсменами и спустимся по лестнице",
-                TaskStatus.NEW, 0, LocalDateTime.of(2022, 12,21, 11, 25), Duration.ofMinutes(20));
+                TaskStatus.NEW, 0, LocalDateTime.of(2022, 12, 21, 11, 25), Duration.ofMinutes(20));
         taskManager.addEpic(epic);
         taskManager.addSubTask(subTask);
         assertEquals(taskManager.getSubTask(1).getTitle(), subTask.getTitle());
         assertEquals(taskManager.getSubTask(1).getDescription(), subTask.getDescription());
         assertEquals(taskManager.getSubTask(1).getStatus(), TaskStatus.NEW);
-        assertEquals(LocalDateTime.of(2022, 12,21, 11, 25), epic.getStartTime());
+        assertEquals(LocalDateTime.of(2022, 12, 21, 11, 25), epic.getStartTime());
         assertEquals(Duration.ofMinutes(20), epic.getDuration());
     }
 
     @Test
     public void testingGetTask() {
         Task task = new Task("a", "b",
-                LocalDateTime.of(2022, 12,21, 11, 25), Duration.ofMinutes(15));
+                LocalDateTime.of(2022, 12, 21, 11, 25), Duration.ofMinutes(15));
         Task task1 = new Task("c", "d",
-                LocalDateTime.of(2022, 12,21, 10, 25), Duration.ofMinutes(15));
+                LocalDateTime.of(2022, 12, 21, 10, 25), Duration.ofMinutes(15));
         taskManager.addTask(task);
         taskManager.addTask(task1);
         Task task2 = taskManager.getTask(0);
@@ -372,7 +372,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void testingHistoryManagerEmptyTaskHistory() {
         Task task = new Task("a", "b");
-        Task task1 = new Task("f","g");
+        Task task1 = new Task("f", "g");
         Epic epic = new Epic("c", "d");
         taskManager.addTask(task);
         taskManager.addTask(task1);
@@ -380,7 +380,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(taskManager.getHistory().size(), 0);
         taskManager.getTask(0);
         taskManager.getTask(0);
-        List<Integer>list = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
         list.add(0);
         assertEquals(list.get(0), taskManager.getHistory().get(0).getId());
         assertEquals(1, taskManager.getHistory().size());
