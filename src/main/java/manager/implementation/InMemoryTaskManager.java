@@ -53,7 +53,7 @@ public class InMemoryTaskManager implements TaskManager {
             comparisonOfTasksOverTime(epic);
         }
     }
-
+    
     @Override
     public void addSubTask(SubTask subTask) {
         if (!epicsMap.containsKey(subTask.getEpicId())) {
@@ -346,5 +346,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public HistoryManager getHistoryManager() {
         return history;
+    }
+
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<Task>(listOfTasksSortedByTime);
     }
 }

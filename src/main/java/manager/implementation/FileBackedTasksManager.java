@@ -5,6 +5,7 @@ import manager.interfaces.HistoryManager;
 import model.*;
 
 import java.io.*;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,10 +21,15 @@ import static model.TaskType.SUBTASK;
 import static model.TaskType.TASK;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private final Path path;
+    private Path path;
+    private URI uri;
 
     private FileBackedTasksManager(File file) {
         this.path = file.toPath();
+    }
+
+    public FileBackedTasksManager(URI uri) {
+        this.uri = uri;
     }
 
     public void save() {
@@ -90,15 +96,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return fileBackedTasksManager;
     }
 
-    private void getTaskSuper(int id) {
+    public void getTaskSuper(int id) {
         super.getTask(id);
     }
 
-    private void getEpicSuper(int id) {
+    public void getEpicSuper(int id) {
         super.getEpic(id);
     }
 
-    private void getSubTaskSuper(int id) {
+    public void getSubTaskSuper(int id) {
         super.getSubTask(id);
     }
 

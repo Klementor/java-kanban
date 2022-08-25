@@ -5,9 +5,9 @@ import model.Task;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
     File file = new File("testing.csv");
