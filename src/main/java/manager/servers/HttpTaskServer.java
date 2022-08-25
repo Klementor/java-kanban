@@ -17,18 +17,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
 public class HttpTaskServer {
     private static final int PORT = 8080;
+    private static final String GET = "GET";
+    private static final String POST = "POST";
+    private static final String DELETE = "DELETE";
     HttpServer httpServer;
     File file = new File("testing.csv");
     FileBackedTasksManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(file);
-    static TaskManager taskManager = Managers.getDefault();
-    static Gson gson = new GsonBuilder().setPrettyPrinting()
+    private static TaskManager taskManager = Managers.getDefault();
+    private static Gson gson = new GsonBuilder().setPrettyPrinting()
             .serializeNulls().create();
 
     public void startServer() {
@@ -58,7 +60,7 @@ public class HttpTaskServer {
             String method = httpExchange.getRequestMethod();
             try {
                 switch (method) {
-                    case "GET":
+                    case GET:
                         if (stringPath.equals("/tasks/history")) {
                             List<Task> history = taskManager.getHistory();
                             String response = gson.toJson(history);
@@ -72,7 +74,7 @@ public class HttpTaskServer {
                     default:
                         throw new RuntimeException("Вызвали не GET у history");
                 }
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 httpExchange.sendResponseHeaders(400, 0);
                 httpExchange.close();
             }
@@ -87,7 +89,7 @@ public class HttpTaskServer {
             String method = httpExchange.getRequestMethod();
             try {
                 switch (method) {
-                    case "GET":
+                    case GET:
                         if (stringPath.equals("/tasks/task/")) {
                             Map<Integer, Task> tasksMap = taskManager.getTasksMap();
                             String response = gson.toJson(tasksMap);
@@ -106,7 +108,7 @@ public class HttpTaskServer {
                         } else
                             throw new RuntimeException("Неверный путь");
                         break;
-                    case "POST":
+                    case POST:
                         InputStream inputStream = httpExchange.getRequestBody();
                         String jsonString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
                         JsonElement jsonElement = JsonParser.parseString(jsonString);
@@ -126,7 +128,7 @@ public class HttpTaskServer {
                         httpExchange.sendResponseHeaders(201, 0);
                         httpExchange.close();
                         break;
-                    case "DELETE":
+                    case DELETE:
                         if ("/tasks/task/".equals(stringPath)) {
                             taskManager.clearTask();
                         } else {
@@ -156,7 +158,7 @@ public class HttpTaskServer {
             String method = httpExchange.getRequestMethod();
             try {
                 switch (method) {
-                    case "GET":
+                    case GET:
                         if (stringPath.equals("/tasks/epic/")) {
                             Map<Integer, Epic> epicsMap = taskManager.getEpicsMap();
                             String response = gson.toJson(epicsMap);
@@ -175,7 +177,7 @@ public class HttpTaskServer {
                         } else
                             throw new RuntimeException("Неверный путь");
                         break;
-                    case "POST":
+                    case POST:
                         InputStream inputStream = httpExchange.getRequestBody();
                         String jsonString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
                         JsonElement jsonElement = JsonParser.parseString(jsonString);
@@ -195,7 +197,7 @@ public class HttpTaskServer {
                         httpExchange.sendResponseHeaders(201, 0);
                         httpExchange.close();
                         break;
-                    case "DELETE":
+                    case DELETE:
                         if ("/tasks/epic/".equals(stringPath)) {
                             taskManager.clearEpic();
                         } else {
@@ -217,110 +219,110 @@ public class HttpTaskServer {
         }
     }
 
-        static class SubtaskHandler implements HttpHandler {
-            @Override
-            public void handle(HttpExchange httpExchange) throws IOException {
-                URI path = httpExchange.getRequestURI();
-                String stringPath = path.toString();
-                String method = httpExchange.getRequestMethod();
-                try {
-                    switch (method) {
-                        case "GET":
-                            if (stringPath.equals("/tasks/subtask/")) {
-                                Map<Integer, SubTask> subTaskMap = taskManager.getSubTasksMap();
-                                String response = gson.toJson(subTaskMap);
-                                httpExchange.sendResponseHeaders(200, 0);
-                                try (OutputStream outputStream = httpExchange.getResponseBody()) {
-                                    outputStream.write(response.getBytes());
-                                }
-                            } else if (stringPath.startsWith("/tasks/subtask/?id=")) {
-                                String[] id = stringPath.split("=");
-                                SubTask subTask = taskManager.getSubTask(Integer.parseInt(id[1]));
-                                String response = gson.toJson(subTask);
-                                httpExchange.sendResponseHeaders(200, 0);
-                                try (OutputStream outputStream = httpExchange.getResponseBody()) {
-                                    outputStream.write(response.getBytes());
-                                }
-                            } else if (stringPath.startsWith("/tasks/subtask/epic?id=")) {
-                                String[] id = stringPath.split("=");
-                                List<Integer> listSubTasks = taskManager.getSubTaskList(Integer.parseInt(id[1]));
-                                String response = gson.toJson(listSubTasks);
-                                httpExchange.sendResponseHeaders(200, 0);
-                                try (OutputStream outputStream = httpExchange.getResponseBody()) {
-                                    outputStream.write(response.getBytes());
-                                }
-                            } else
-                                throw new RuntimeException("Неверный путь");
-                            break;
-                        case "POST":
-                            InputStream inputStream = httpExchange.getRequestBody();
-                            String jsonString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-                            JsonElement jsonElement = JsonParser.parseString(jsonString);
-                            if (!jsonElement.isJsonObject()) {
-                                throw new RuntimeException("Это не jsonObject");
-                            }
-                            JsonObject jsonObject = jsonElement.getAsJsonObject();
-                            SubTask subTask = gson.fromJson(jsonObject, SubTask.class);
+    static class SubtaskHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange httpExchange) throws IOException {
+            URI path = httpExchange.getRequestURI();
+            String stringPath = path.toString();
+            String method = httpExchange.getRequestMethod();
+            try {
+                switch (method) {
+                    case GET:
+                        if (stringPath.equals("/tasks/subtask/")) {
                             Map<Integer, SubTask> subTaskMap = taskManager.getSubTasksMap();
-                            if (httpExchange.getRequestURI().toString().equals("/tasks/subtask/")) {
-                                if (subTaskMap.containsValue(subTask)) {
-                                    taskManager.updateSubTask(subTask);
-                                } else {
-                                    taskManager.addSubTask(subTask);
-                                }
-                            }
-                            httpExchange.sendResponseHeaders(201, 0);
-                            httpExchange.close();
-                            break;
-                        case "DELETE":
-                            if ("/tasks/subtask/".equals(stringPath)) {
-                                taskManager.clearSubTask();
-                            } else {
-                                if (stringPath.startsWith("/tasks/subtask/?id=")) {
-                                    String[] mass = stringPath.split("=");
-                                    taskManager.removeSubTask(Integer.parseInt(mass[1]));
-                                }
-                            }
+                            String response = gson.toJson(subTaskMap);
                             httpExchange.sendResponseHeaders(200, 0);
-                            httpExchange.close();
-                            break;
-                        default:
-                            throw new RuntimeException("Вызвали не GET у epic");
-                    }
-                } catch (Throwable e) {
-                    httpExchange.sendResponseHeaders(400, 0);
-                    httpExchange.close();
+                            try (OutputStream outputStream = httpExchange.getResponseBody()) {
+                                outputStream.write(response.getBytes());
+                            }
+                        } else if (stringPath.startsWith("/tasks/subtask/?id=")) {
+                            String[] id = stringPath.split("=");
+                            SubTask subTask = taskManager.getSubTask(Integer.parseInt(id[1]));
+                            String response = gson.toJson(subTask);
+                            httpExchange.sendResponseHeaders(200, 0);
+                            try (OutputStream outputStream = httpExchange.getResponseBody()) {
+                                outputStream.write(response.getBytes());
+                            }
+                        } else if (stringPath.startsWith("/tasks/subtask/epic?id=")) {
+                            String[] id = stringPath.split("=");
+                            List<Integer> listSubTasks = taskManager.getSubTaskList(Integer.parseInt(id[1]));
+                            String response = gson.toJson(listSubTasks);
+                            httpExchange.sendResponseHeaders(200, 0);
+                            try (OutputStream outputStream = httpExchange.getResponseBody()) {
+                                outputStream.write(response.getBytes());
+                            }
+                        } else
+                            throw new RuntimeException("Неверный путь");
+                        break;
+                    case POST:
+                        InputStream inputStream = httpExchange.getRequestBody();
+                        String jsonString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                        JsonElement jsonElement = JsonParser.parseString(jsonString);
+                        if (!jsonElement.isJsonObject()) {
+                            throw new RuntimeException("Это не jsonObject");
+                        }
+                        JsonObject jsonObject = jsonElement.getAsJsonObject();
+                        SubTask subTask = gson.fromJson(jsonObject, SubTask.class);
+                        Map<Integer, SubTask> subTaskMap = taskManager.getSubTasksMap();
+                        if (httpExchange.getRequestURI().toString().equals("/tasks/subtask/")) {
+                            if (subTaskMap.containsValue(subTask)) {
+                                taskManager.updateSubTask(subTask);
+                            } else {
+                                taskManager.addSubTask(subTask);
+                            }
+                        }
+                        httpExchange.sendResponseHeaders(201, 0);
+                        httpExchange.close();
+                        break;
+                    case DELETE:
+                        if ("/tasks/subtask/".equals(stringPath)) {
+                            taskManager.clearSubTask();
+                        } else {
+                            if (stringPath.startsWith("/tasks/subtask/?id=")) {
+                                String[] mass = stringPath.split("=");
+                                taskManager.removeSubTask(Integer.parseInt(mass[1]));
+                            }
+                        }
+                        httpExchange.sendResponseHeaders(200, 0);
+                        httpExchange.close();
+                        break;
+                    default:
+                        throw new RuntimeException("Вызвали не GET у epic");
                 }
+            } catch (Throwable e) {
+                httpExchange.sendResponseHeaders(400, 0);
+                httpExchange.close();
             }
         }
+    }
 
-        static class PrioritizedTasksHandler implements HttpHandler {
-            @Override
-            public void handle(HttpExchange httpExchange) throws IOException {
-                URI path = httpExchange.getRequestURI();
-                String stringPath = path.toString();
-                String method = httpExchange.getRequestMethod();
-                try {
-                    switch (method) {
-                        case "GET":
-                            if (stringPath.equals("/tasks/")) {
-                                List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
-                                String response = gson.toJson(prioritizedTasks);
-                                httpExchange.sendResponseHeaders(200, 0);
-                                try (OutputStream outputStream = httpExchange.getResponseBody()) {
-                                    outputStream.write(response.getBytes());
-                                }
-                            } else
-                                throw new RuntimeException("Неверный путь");
-                            break;
-                        default:
-                            throw new RuntimeException("Вызвали не GET у task");
-                    }
-                } catch (Throwable e) {
-                    httpExchange.sendResponseHeaders(400, 0);
-                    httpExchange.close();
+    static class PrioritizedTasksHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange httpExchange) throws IOException {
+            URI path = httpExchange.getRequestURI();
+            String stringPath = path.toString();
+            String method = httpExchange.getRequestMethod();
+            try {
+                switch (method) {
+                    case GET:
+                        if (stringPath.equals("/tasks/")) {
+                            List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+                            String response = gson.toJson(prioritizedTasks);
+                            httpExchange.sendResponseHeaders(200, 0);
+                            try (OutputStream outputStream = httpExchange.getResponseBody()) {
+                                outputStream.write(response.getBytes());
+                            }
+                        } else
+                            throw new RuntimeException("Неверный путь");
+                        break;
+                    default:
+                        throw new RuntimeException("Вызвали не GET у task");
                 }
+            } catch (Throwable e) {
+                httpExchange.sendResponseHeaders(400, 0);
+                httpExchange.close();
             }
         }
+    }
 
 }

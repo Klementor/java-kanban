@@ -25,11 +25,11 @@ public class HTTPTaskManager extends FileBackedTasksManager {
         super(KVServerUri);
         try {
             loadFromKey();
-        } catch (Throwable throwable) {
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         kvTaskClient = new KVTaskClient(uri);
-        uri = KVServerUri;
+        this.uri = KVServerUri;
     }
 
     @Override

@@ -2,6 +2,7 @@ package manager.implementation;
 
 import manager.exception.ManagerSaveException;
 import manager.interfaces.HistoryManager;
+import manager.utils.HeaderUtils;
 import model.*;
 
 import java.io.*;
@@ -33,7 +34,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public void save() {
-        WorkWithHeader.addHeader(path);
+        HeaderUtils.addHeader(path);
         try (Writer writer = new FileWriter(path.toString(), StandardCharsets.UTF_8, true)) {
             for (Map.Entry<Integer, Task> entry : getTasksMap().entrySet()) {
                 writer.write(getTaskString(entry.getValue()));

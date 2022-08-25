@@ -43,7 +43,7 @@ public class KVTaskClient {
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         HttpResponse<String> response = httpClient.send(httpRequest, handler);
         if (response.statusCode() != 200) {
-            throw new RuntimeException("Ошибка запроса");
+            throw new RuntimeException("Код ошибки 400, некоректный запрос");
         }
     }
 
@@ -58,7 +58,7 @@ public class KVTaskClient {
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         HttpResponse<String> response = httpClient.send(httpRequest, handler);
         if (response.statusCode() != 200) {
-            throw new RuntimeException("Ошибка запроса");
+            throw new RuntimeException("Ошибка 404, данные не найдены");
         }
         return response.body();
     }

@@ -1,12 +1,22 @@
 package manager.implementation;
 
 public enum NamesOfColumn {
-    id,
-    type,
-    name,
-    status,
-    description,
-    epic,
-    duration,
-    startTime
+    ID("id"),
+    TYPE("type"),
+    NAME("name"),
+    STATUS("status"),
+    DESCRIPTION("description"),
+    EPIC("epic"),
+    DURATION("duration"),
+    START_TIME("startTime");
+
+    private String description;
+
+    NamesOfColumn (String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

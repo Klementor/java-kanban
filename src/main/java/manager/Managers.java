@@ -10,11 +10,10 @@ import java.io.File;
 public class Managers {
 
     public static TaskManager getDefault() {
-        File file = new File("testing.csv");
-        return FileBackedTasksManager.loadFromFile(file);
+        return FileBackedTasksManager.loadFromFile(new File("testing.csv"));
     }
 
-    public static HistoryManager getDefaultHistory(){
+    public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }
 }
